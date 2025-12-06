@@ -2,9 +2,9 @@ const router = require("express").Router();
 const Task = require("../models/Task");
 const Project = require("../models/Project");
 const auth = require("../middleware/auth");
+const role = require("../middleware/role")
 
 //   route bech nasna3 task lel user wala l manager
-
 router.post("/", auth, async (req, res) => {
   try {
     // Njib ka data mel body
@@ -81,6 +81,25 @@ router.put("/:id", auth, async (req, res) => {
     res.json({ message: "Task tbadelet jawha behi", task });
   } catch (err) {
     res.status(500).json({ message: "Erreur fel update mta3 task", err });
+  }
+});
+// route li bech ya3ti beha l manager tache lel user
+router.put("/assign/:id", auth, async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const {userId} = req.body;
+     // nlawjou 3a tache
+    const task = await Task.findById(taskId);
+    if (!task) {
+      return res.status(404).json({ message: "Task mahich mawjouda aslan !" });
+    }
+// Na3mlou assign lel user 
+    task.assignedTo = userId;
+    await task.save();
+
+    res.json({ message: "Task t3aynet jawha behi", task });
+  } catch (err) {
+    res.status(500).json({ message: "Erreur fel assign task", err });
   }
 });
 
