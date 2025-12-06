@@ -102,5 +102,51 @@ router.put("/assign/:id", auth, async (req, res) => {
     res.status(500).json({ message: "Erreur fel assign task", err });
   }
 });
+// route bech ya3mel filter lel les taches par status
+router.get("/status/:statut", auth, async (req, res) => {
+  try {
+    const statut = req.params.statut; // Nchoufou e status to do, doing wala done 
+
+    // Nlawjou 3al les taches li 3andhom e statut li 7atineha f const statut
+    const tasks = await Task.find({ statut });
+
+    res.json(tasks);
+  } catch (err) {
+    res.status(500).json({ message: "Erreur fel filtrage", err });
+  }
+});
+
+
+// route bech ylwej 3al les taches 
+router.get("/search/:keyword", auth, async (req, res) => {
+  try {
+    const keyword = req.params.keyword;
+
+    const tasks = await Task.find({
+    // nesta3mlou Regex bech nal9aw ay titre fih el mot hedha
+      titre: { $regex: keyword, $options: "i" }
+    });
+
+    res.json(tasks);
+  } catch (err) {
+    res.status(500).json({ message: "Erreur fel recherche ", err });
+  }
+});
+// route bech ya3mel tri 
+router.get("/sort/:order", auth, async (req, res) => {
+  try {
+    const order = req.params.order === "asc" ? 1 : -1;
+
+    const tasks = await Task.find().sort({ createdAt: order });
+
+    res.json(tasks);
+  } catch (err) {
+    res.status(500).json({ message: "Erreur fel tri", err });
+  }
+});
+
+
+
+
 
 module.exports = router;
